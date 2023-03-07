@@ -50,4 +50,29 @@ class Products with ChangeNotifier {
     _items.add(productData);
     notifyListeners();
   }
+
+  void removeProduct(String productId) {
+    _items.removeWhere((product) => product.id == productId);
+    notifyListeners();
+  }
+
+  Product getProductById(String productId) {
+    return _items.firstWhere((product) => product.id == productId);
+  }
+
+  void updateProduct(String productId, Product newProductData) {
+    final foundProductIndex =
+        _items.indexWhere((product) => product.id == productId);
+    if (foundProductIndex >= 0) {
+      _items[foundProductIndex] = Product(
+        id: productId,
+        title: newProductData.title,
+        imageUrl: newProductData.imageUrl,
+        description: newProductData.description,
+        price: newProductData.price,
+      );
+    } else {
+      print('Update product failed');
+    }
+  }
 }

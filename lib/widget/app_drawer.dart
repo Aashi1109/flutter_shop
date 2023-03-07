@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shop/screen/user_product.dart';
 
 import '../screen/orders_screen.dart';
 
@@ -29,6 +30,15 @@ class MainDrawer extends StatelessWidget {
             onTap: () {
               Navigator.of(context)
                   .pushReplacementNamed(OrdersScreen.namedRoute);
+            },
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.shopping_bag_outlined),
+            title: const Text('User Products'),
+            onTap: () {
+              Navigator.of(context)
+                  .pushReplacementNamed(UserProduct.namedRoute);
             },
           ),
         ],
