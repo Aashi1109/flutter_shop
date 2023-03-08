@@ -15,7 +15,6 @@ class MainDrawer extends StatelessWidget {
             title: const Text('Hello, Shopper'),
             automaticallyImplyLeading: false,
           ),
-          const Divider(),
           ListTile(
             leading: const Icon(Icons.shopify_outlined),
             title: const Text('Products'),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop/provider/cart.dart';
+import 'package:shop/provider/products.dart';
 import 'package:shop/widget/app_drawer.dart';
 
 import '../widget/badge.dart';
@@ -20,6 +21,42 @@ class ProductOverviewScreen extends StatefulWidget {
 class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
   // final List<Product> loadedProducts= DUMMY_PRODUCTS;
   bool _showFavorite = false;
+  bool _isLoading = false;
+  bool _isError = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    setState(() {
+      _isLoading = true;
+    });
+    Provider.of<Products>(context, listen: false).fetchProducts().then((_) {
+      setState(() {
+        _isLoading = false;
+      });
+    }).catchError((err) {
+      setState(() {
+        _isError = true;
+      });
+
+      showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+                title: const Text('Error happened'),
+                content: Text(err.toString()),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(ctx).pop();
+                    },
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ));
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     // final cartData = Provider.of<Cart>(context, listen: false);
@@ -71,7 +108,22 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
           ),
         ],
       ),
-      body: ProductGrid(showFav: _showFavorite),
+      body: _isLoading
+          ? Center(
+              child: Container(
+                margin: const EdgeInsets.symmetric(vertical: double.infinity),
+                child: Column(
+                  children: const [
+                    CircularProgressIndicator(),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Text('Loading products...')
+                  ],
+                ),
+              ),
+            )
+          : ProductGrid(showFav: _showFavorite),
       drawer: const MainDrawer(),
     );
   }
