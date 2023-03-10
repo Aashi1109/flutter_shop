@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shop/provider/cart.dart';
-import 'package:shop/provider/products.dart';
-import 'package:shop/widget/app_drawer.dart';
 
+import '../provider/cart.dart';
+import '../provider/products.dart';
+import '../widget/app_drawer.dart';
 import '../widget/badge.dart';
 import './cart_screen.dart';
-
 import '../widget/product_grid.dart';
 
 enum MenuFilters { Favourite, All }
@@ -31,30 +30,32 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
     setState(() {
       _isLoading = true;
     });
-    Provider.of<Products>(context, listen: false).fetchProducts().then((_) {
-      setState(() {
-        _isLoading = false;
-      });
-    }).catchError((err) {
-      setState(() {
-        _isError = true;
-      });
+    {
+      Provider.of<Products>(context, listen: false).fetchProducts().then((_) {
+        setState(() {
+          _isLoading = false;
+        });
+      }).catchError((err) {
+        setState(() {
+          _isError = true;
+        });
 
-      showDialog(
-          context: context,
-          builder: (ctx) => AlertDialog(
-                title: const Text('Error happened'),
-                content: Text(err.toString()),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(ctx).pop();
-                    },
-                    child: const Text('Retry'),
-                  ),
-                ],
-              ));
-    });
+        showDialog(
+            context: context,
+            builder: (ctx) => AlertDialog(
+                  title: const Text('Error happened'),
+                  content: Text(err.toString()),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(ctx).pop();
+                      },
+                      child: const Text('Retry'),
+                    ),
+                  ],
+                ));
+      });
+    }
   }
 
   @override
@@ -111,8 +112,9 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
       body: _isLoading
           ? Center(
               child: Container(
-                margin: const EdgeInsets.symmetric(vertical: double.infinity),
+                // margin: const EdgeInsets.symmetric(vertical: double.infinity),
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: const [
                     CircularProgressIndicator(),
                     SizedBox(

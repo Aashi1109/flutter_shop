@@ -10,6 +10,7 @@ class Product with ChangeNotifier {
   final String imageUrl;
   final String description;
   final double price;
+  String? userId;
   bool isFavourite;
 
   Product({
@@ -18,26 +19,31 @@ class Product with ChangeNotifier {
     required this.imageUrl,
     required this.description,
     required this.price,
+    this.userId,
     this.isFavourite = false,
   });
 
-  void toogleFavourite() async {
+  Future<void> toogleFavourite(String token, String userId) async {
     bool oldStatus = isFavourite;
     isFavourite = !isFavourite;
     notifyListeners();
     final serverUrl = Uri.parse(
-        'https://flutter-shop-7fdbf-default-rtdb.firebaseio.com/products/$id.json');
+        'https://flutter-shop-7fdbf-default-rtdb.firebaseio.com/userFavourites/$userId/$id.json?auth=$token');
     try {
-      final patchResp = await http.patch(
+      // print(serverUrl.toString());
+      final patchResp = await http.put(
         serverUrl,
         body: jsonEncode({
           'isFavourite': isFavourite,
         }),
       );
+
+      // print(patchResp.body);
       if (patchResp.statusCode >= 400) {
         throw const HttpException('Error changing favourite');
       }
     } catch (err) {
+      // print(err);
       isFavourite = oldStatus;
       notifyListeners();
     }

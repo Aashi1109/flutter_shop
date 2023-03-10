@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shop/widget/app_drawer.dart';
-import 'package:shop/widget/order_item.dart';
 
+import '../widget/app_drawer.dart';
+import '../widget/order_item.dart';
 import '../provider/orders.dart' show Order;
 
 class OrdersScreen extends StatelessWidget {
@@ -23,7 +23,7 @@ class OrdersScreen extends StatelessWidget {
           builder: (context, dataSnapshot) {
             switch (dataSnapshot.connectionState) {
               case ConnectionState.waiting:
-                print('In connection active state');
+                // print('In connection active state');
                 return const Center(
                   child: CircularProgressIndicator(),
                 );

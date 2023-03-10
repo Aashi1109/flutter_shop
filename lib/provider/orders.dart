@@ -21,8 +21,15 @@ class OrderItem {
 
 class Order with ChangeNotifier {
   List<OrderItem> _orders = [];
-  final postUrl = Uri.parse(
-      'https://flutter-shop-7fdbf-default-rtdb.firebaseio.com/orders.json');
+
+  late Uri postUrl;
+  String _tokenId = '';
+
+  Order(String tokenId, this._orders) {
+    _tokenId = tokenId;
+    postUrl = Uri.parse(
+        'https://flutter-shop-7fdbf-default-rtdb.firebaseio.com/orders.json?auth=$tokenId');
+  }
 
   List<OrderItem> get orders {
     return [..._orders];

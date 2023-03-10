@@ -1,15 +1,26 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
-
 import 'package:flutter/material.dart';
 
 import '../models/product.dart';
 
 class Products with ChangeNotifier {
-  static final serverUrl = Uri.parse(
-      'https://flutter-shop-7fdbf-default-rtdb.firebaseio.com/products.json');
+  final String tokenId;
+  late Uri serverUrl;
+  final String userId;
+  Products(
+    this.tokenId,
+    this.userId,
+    this._items,
+  ) {
+    serverUrl = Uri.parse(
+        'https://flutter-shop-7fdbf-default-rtdb.firebaseio.com/products.json?auth=$tokenId');
+    // print(serverUrl);
+  }
 
+  // String dumUrl = ;
+  // List<String> _curUserItems = [];
   List<Product> _items = [
     // Product(
     //   id: 'p1',
@@ -59,7 +70,8 @@ class Products with ChangeNotifier {
       'description': productData.description,
       'price': productData.price,
       'imageUrl': productData.imageUrl,
-      'isFavourite': productData.isFavourite,
+      'userId': userId,
+      // 'isFavourite': productData.isFavourite,
     });
 
     try {
@@ -74,7 +86,7 @@ class Products with ChangeNotifier {
       ));
       notifyListeners();
     } catch (err) {
-      print('Error occured in $err');
+      // print('Error occured in $err');
       rethrow;
     }
   }
@@ -89,7 +101,7 @@ class Products with ChangeNotifier {
 
     // Deletion login
     final deleteUrl = Uri.parse(
-        'https://flutter-shop-7fdbf-default-rtdb.firebaseio.com/products/$productId.json');
+        'https://flutter-shop-7fdbf-default-rtdb.firebaseio.com/products/$productId.json?auth=$tokenId');
     final delResp = await http.delete(deleteUrl);
     // print(delResp.body);
     if (delResp.statusCode >= 400) {
@@ -111,7 +123,8 @@ class Products with ChangeNotifier {
         _items.indexWhere((product) => product.id == productId);
     if (foundProductIndex >= 0) {
       final patchUrl = Uri.parse(
-          'https://flutter-shop-7fdbf-default-rtdb.firebaseio.com/products/$productId.json');
+          'https://flutter-shop-7fdbf-default-rtdb.firebaseio.com/products/$productId.json?auth=$tokenId');
+
       await http.patch(patchUrl,
           body: jsonEncode({
             'title': newProductData.title,
@@ -125,18 +138,31 @@ class Products with ChangeNotifier {
         imageUrl: newProductData.imageUrl,
         description: newProductData.description,
         price: newProductData.price,
+        userId: newProductData.userId ?? '',
       );
       notifyListeners();
     } else {
-      print('Update product failed');
+      // print('Update product failed');
     }
   }
 
   Future<void> fetchProducts() async {
     try {
+      // print(serverUrl.toString());
+      final favUrl = Uri.parse(
+          'https://flutter-shop-7fdbf-default-rtdb.firebaseio.com/userFavourites/$userId.json?auth=$tokenId');
+
       final data = await http.get(serverUrl);
       // print(data.body);
       final fetchedData = jsonDecode(data.body) as Map<String, dynamic>;
+
+      if (fetchedData['error'] != null) {
+        throw HttpException(fetchedData['error']);
+      }
+      final favListResp = await http.get(favUrl);
+      final favList = jsonDecode(favListResp.body);
+      // print(favListResp.body);
+      // print(fetchedData);
       List<Product> loadedProducts = [];
       // print(fetchedData);
 
@@ -146,10 +172,14 @@ class Products with ChangeNotifier {
           id: id,
           title: prodData["title"],
           description: prodData["description"],
-          // price: double.parse(prodData["price"]),
           price: prodData["price"],
           imageUrl: prodData["imageUrl"],
-          isFavourite: prodData["isFavourite"],
+          userId: prodData['userId'] ?? '',
+          isFavourite: favList == null
+              ? false
+              : favList[id] == null
+                  ? false
+                  : favList[id]['isFavourite'] ?? false,
         ));
       });
 
@@ -159,5 +189,9 @@ class Products with ChangeNotifier {
       print(err);
       rethrow;
     }
+  }
+
+  List<Product> get curUserProd {
+    return _items.where((prod) => prod.userId == userId).toList();
   }
 }

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shop/models/product.dart';
-import 'package:shop/provider/products.dart';
+
+import '../models/product.dart';
+import '../provider/products.dart';
 
 class AddNewProduct extends StatefulWidget {
   static const namedRoute = '/add-product';
@@ -17,6 +18,7 @@ class _AddNewProductState extends State<AddNewProduct> {
   final _imageFocusNode = FocusNode();
   final _imageInputController = TextEditingController();
   var formGlobalKey = GlobalKey<FormState>();
+  // final userId = Provider.of(context).
 
   var _editedProduct = Product(
     id: '',
@@ -24,6 +26,7 @@ class _AddNewProductState extends State<AddNewProduct> {
     imageUrl: '',
     description: '',
     price: 0,
+    // userId: Provider.of(context).
   );
 
   // Update page variables
@@ -36,6 +39,7 @@ class _AddNewProductState extends State<AddNewProduct> {
   };
   var isInit = true;
   String? expectedProductId = '';
+  // bool isViewOnly = true;
 
   // Loading spinner
   bool _isLoading = false;
@@ -62,11 +66,14 @@ class _AddNewProductState extends State<AddNewProduct> {
     if (!_imageFocusNode.hasFocus) {
       if ((_imageInputController.text.isNotEmpty &&
               !_imageInputController.text.startsWith('http') &&
-              !_imageInputController.text.startsWith('https')) ||
-          (_imageInputController.text.isNotEmpty &&
-              !_imageInputController.text.endsWith('.png') &&
-              !_imageInputController.text.endsWith('.jpeg') &&
-              !_imageInputController.text.endsWith('.jpg'))) return;
+              !_imageInputController.text.startsWith('https'))
+          // ||
+          // (_imageInputController.text.isNotEmpty &&
+          //     !_imageInputController.text.endsWith('.png') &&
+          //     !_imageInputController.text.endsWith('.jpeg') &&
+          //     !_imageInputController.text.endsWith('.jpg')
+          //     )
+          ) return;
       // if (_imageInputController.text.isEmpty) setState(() {});
       setState(() {});
     }
@@ -129,7 +136,9 @@ class _AddNewProductState extends State<AddNewProduct> {
     super.didChangeDependencies();
     if (isInit) {
       expectedProductId = ModalRoute.of(context)?.settings.arguments as String?;
-      // print(expectedProductId);
+      print(expectedProductId);
+      // expectedProductId = routeArgs['id'];
+      // isViewOnly = !routeArgs['view'];
 
       if (expectedProductId != null) {
         final foundProduct =
@@ -145,6 +154,7 @@ class _AddNewProductState extends State<AddNewProduct> {
         };
         _imageInputController.text = foundProduct.imageUrl;
       }
+      // if (!isViewOnly) _isUpdating = false;
     }
     isInit = false;
   }
@@ -182,6 +192,7 @@ class _AddNewProductState extends State<AddNewProduct> {
                       initialValue:
                           _isUpdating ? oldData['title'] : _editedProduct.title,
                       textInputAction: TextInputAction.next,
+                      // enabled: isViewOnly,
                       onEditingComplete: () {
                         FocusScope.of(context).requestFocus(_priceFocusNode);
                       },
@@ -205,6 +216,7 @@ class _AddNewProductState extends State<AddNewProduct> {
                       decoration: const InputDecoration(
                         label: Text('Price'),
                       ),
+                      // enabled: isViewOnly,
                       initialValue: _isUpdating
                           ? oldData['price']
                           : _editedProduct.price.toString(),
@@ -238,6 +250,7 @@ class _AddNewProductState extends State<AddNewProduct> {
                       decoration: const InputDecoration(
                         label: Text('Description'),
                       ),
+                      // enabled: isViewOnly,
                       initialValue: _isUpdating
                           ? oldData['description']
                           : _editedProduct.description,
@@ -268,18 +281,22 @@ class _AddNewProductState extends State<AddNewProduct> {
                             decoration: const InputDecoration(
                               label: Text('Image Url'),
                             ),
+                            // enabled: isViewOnly,
                             keyboardType: TextInputType.url,
                             focusNode: _imageFocusNode,
                             controller: _imageInputController,
                             validator: (value) {
                               if (value!.isEmpty ||
-                                  (value.isNotEmpty &&
-                                      !value.startsWith('http') &&
-                                      !value.startsWith('https')) ||
-                                  (value.isNotEmpty &&
-                                      !value.endsWith('.png') &&
-                                      !value.endsWith('.jpeg') &&
-                                      !value.endsWith('.jpg'))) {
+                                      (value.isNotEmpty &&
+                                          !value.startsWith('http') &&
+                                          !value.startsWith('https'))
+                                  //     ||
+                                  // (value.isNotEmpty &&
+                                  //     !value.endsWith('.png') &&
+                                  //     !value.endsWith('.jpeg') &&
+                                  //     !value.endsWith('.jpg')
+                                  //     )
+                                  ) {
                                 return 'Provide a valid image url';
                               }
                               // if  {

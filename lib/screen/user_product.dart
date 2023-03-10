@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shop/provider/products.dart';
-import 'package:shop/widget/app_drawer.dart';
-import 'package:shop/widget/user_product_item.dart';
+
+import '../provider/products.dart';
+import '../widget/app_drawer.dart';
+import '../widget/user_product_item.dart';
 import './add_new_product_screen.dart';
 
 class UserProduct extends StatelessWidget {
@@ -16,9 +17,10 @@ class UserProduct extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final productProvider = Provider.of<Products>(context);
+    // final userProducts = productProvider;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('User Products'),
+        title: const Text('Manage Products'),
         actions: [
           IconButton(
             onPressed: () {
@@ -32,11 +34,12 @@ class UserProduct extends StatelessWidget {
       body: RefreshIndicator(
         onRefresh: () => _refreshProducts(context),
         child: ListView(
-          children: productProvider.items
+          children: productProvider.curUserProd
               .map(
                 (product) => Column(
                   children: [
                     UserProductItem(
+                      prodUserId: product.userId ?? '',
                       title: product.title,
                       imageUrl: product.imageUrl,
                       id: product.id,

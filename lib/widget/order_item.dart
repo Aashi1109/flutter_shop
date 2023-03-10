@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:shop/provider/orders.dart' as pmOI;
+
+import '../provider/orders.dart' as pmOI;
 
 class OrderItem extends StatefulWidget {
   final pmOI.OrderItem orderItem;

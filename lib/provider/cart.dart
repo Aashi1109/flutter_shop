@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 class CartItem {
   final String id;
@@ -15,6 +15,8 @@ class CartItem {
 }
 
 class Cart with ChangeNotifier {
+  // String tokenId;
+  // Cart(this.tokenId);
   Map<String, CartItem> _items = {};
 
   Map<String, CartItem> get items {
