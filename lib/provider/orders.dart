@@ -10,12 +10,14 @@ class OrderItem {
   final double price;
   final List<CartItem> products;
   final DateTime orderDate;
+  String userId;
 
   OrderItem({
     required this.id,
     required this.price,
     required this.products,
     required this.orderDate,
+    this.userId = '',
   });
 }
 
@@ -24,9 +26,11 @@ class Order with ChangeNotifier {
 
   late Uri postUrl;
   String _tokenId = '';
+  String _userId = '';
 
-  Order(String tokenId, this._orders) {
+  Order(String tokenId, String userId, this._orders) {
     _tokenId = tokenId;
+    _userId = userId;
     postUrl = Uri.parse(
         'https://flutter-shop-7fdbf-default-rtdb.firebaseio.com/orders.json?auth=$tokenId');
   }
@@ -52,6 +56,7 @@ class Order with ChangeNotifier {
           OrderItem(
             id: orderId,
             price: orderData['price'],
+            userId: orderData['userId'] ?? '',
             products: (orderData['products'] as List<dynamic>).map((cartItem) {
               // print(cartItem);
               return CartItem(
@@ -76,6 +81,7 @@ class Order with ChangeNotifier {
         body: jsonEncode({
           'price': amount,
           'orderDate': DateTime.now().toIso8601String(),
+          'userId': _userId,
           'products': orderData
               .map(
                 (cartItem) => {
@@ -96,5 +102,9 @@ class Order with ChangeNotifier {
         orderDate: DateTime.now(),
       ),
     );
+  }
+
+  List<OrderItem> get curUserOrders {
+    return _orders.where((order) => order.userId == _userId).toList();
   }
 }

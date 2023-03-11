@@ -39,11 +39,14 @@ class ProductDetailScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
-          Image.network(
-            foundProduct.imageUrl,
-            width: double.infinity,
-            height: 300,
-            fit: BoxFit.cover,
+          Hero(
+            tag: foundProduct.id,
+            child: Image.network(
+              foundProduct.imageUrl,
+              width: double.infinity,
+              height: 300,
+              fit: BoxFit.cover,
+            ),
           ),
           const SizedBox(height: 20),
           Padding(

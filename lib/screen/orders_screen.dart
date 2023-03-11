@@ -44,8 +44,13 @@ class OrdersScreen extends StatelessWidget {
                   return Container(
                     padding: const EdgeInsets.all(15),
                     child: Consumer<Order>(builder: (ctx, orderProvider, ch) {
+                      if (orderProvider.curUserOrders.isEmpty) {
+                        return const Center(
+                          child: Text('No orders found'),
+                        );
+                      }
                       return ListView(
-                        children: orderProvider.orders
+                        children: orderProvider.curUserOrders
                             .map(
                               (order) => OrderItem(
                                 orderItem: order,

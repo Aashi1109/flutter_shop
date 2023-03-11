@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import './screen/add_new_product_screen.dart';
-import './screen/auth-screen.dart';
+import './screen/auth_screen.dart';
 import './screen/user_product.dart';
 import '../provider/orders.dart';
 import './screen/cart_screen.dart';
@@ -13,6 +13,7 @@ import '../screen/product_detail_screen.dart';
 import './screen/product_overview_screen.dart';
 import './provider/auth.dart';
 import './widget/splash_screen.dart';
+import './helpers/custom_route.dart';
 
 void main() {
   runApp(const MyApp());
@@ -40,18 +41,22 @@ class MyApp extends StatelessWidget {
           create: (context) => Cart(),
         ),
         ChangeNotifierProxyProvider<Auth, Order>(
-          create: (context) => Order('', []),
-          update: (_, authProv, prevOrder) =>
-              Order(authProv.token ?? '', prevOrder!.orders),
+          create: (context) => Order('', '', []),
+          update: (_, authProv, prevOrder) => Order(
+              authProv.token ?? '', authProv.curUserId, prevOrder!.orders),
         ),
       ],
       child: MaterialApp(
         title: 'Shopee',
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.purple)
-              .copyWith(secondary: Colors.deepOrange, tertiary: Colors.white),
-          fontFamily: 'Lato',
-        ),
+            colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.purple)
+                .copyWith(secondary: Colors.deepOrange, tertiary: Colors.white),
+            fontFamily: 'Lato',
+            pageTransitionsTheme: PageTransitionsTheme(builders: {
+              TargetPlatform.android: CustomPageTransitionBuilder(),
+              TargetPlatform.iOS: CustomPageTransitionBuilder(),
+            })),
+
         // home: const ProductOverviewScreen(),
         home: Consumer<Auth>(builder: (ctx, authProvider, ch) {
           // print(authProvider.isAuth);
